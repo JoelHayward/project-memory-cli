@@ -1,0 +1,52 @@
+{
+  "name": "project-memory",
+  "version": "0.1.0",
+  "description": "A file-tree standard and CLI that makes any AI coding tool more effective.",
+  "keywords": [
+    "ai",
+    "cli",
+    "project-structure",
+    "agent",
+    "scaffold",
+    "claude",
+    "cursor",
+    "codex"
+  ],
+  "homepage": "https://github.com/JoelHayward/project-memory-cli",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/JoelHayward/project-memory-cli.git"
+  },
+  "bugs": {
+    "url": "https://github.com/JoelHayward/project-memory-cli/issues"
+  },
+  "author": "Joel Hayward",
+  "license": "MIT",
+  "type": "module",
+  "bin": {
+    "project-memory": "./dist/index.js"
+  },
+  "main": "./dist/index.js",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "start": "node dist/index.js",
+    "lint": "eslint src/**/*.ts",
+    "test": "node --experimental-vm-modules node_modules/.bin/jest"
+  },
+  "dependencies": {
+    "chalk": "^5.3.0",
+    "commander": "^12.0.0",
+    "ora": "^8.0.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.4.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
