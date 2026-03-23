@@ -15,26 +15,24 @@ Ask yourself:
 - Does this work with any AI tool, or does it assume a specific one?
 - Would a human be able to understand this without tooling?
 
-If the answers are *simpler*, *any tool*, and *yes* — you're on the right track.
-
 ---
 
 ## What We Welcome
 
 - Bug fixes in the CLI
-- Improvements to generated templates (clearer, more useful defaults)
+- Improvements to generated templates
 - New validation rules that catch real problems
 - Documentation improvements
 - Example projects showing the framework in use
 
-## What We Won't Merge (v1)
+## What We Will Not Merge (v1)
 
 - Roles or skills
 - Agent orchestration or runtime logic
 - UI or dashboards
-- Config files beyond what already exists
+- Config files beyond what init already generates
 - Tool-specific integrations (Claude-only, Cursor-only, etc.)
-- Anything that breaks the zero-config principle
+- Anything that breaks the zero-config or contained-folder principles
 
 ---
 
@@ -47,7 +45,7 @@ cd project-memory-cli
 npm install
 npm run build
 
-# Link locally so you can test the CLI
+# Link locally so you can test the CLI from any folder
 npm link
 
 # Test it
@@ -55,6 +53,7 @@ mkdir /tmp/test-project && cd /tmp/test-project
 project-memory init
 project-memory new task "Test task"
 project-memory validate
+project-memory tree
 ```
 
 ---
@@ -62,7 +61,7 @@ project-memory validate
 ## Making Changes
 
 1. Fork the repo
-2. Create a branch: `git checkout -b fix/your-fix` or `feat/your-feature`
+2. Create a branch: `fix/your-fix` or `feat/your-feature`
 3. Make your changes in `src/`
 4. Run `npm run build` and test manually
 5. Open a pull request with a clear description of what and why
@@ -71,10 +70,9 @@ project-memory validate
 
 ## Changing the Spec
 
-The spec (`SPEC.md`) is the source of truth. Changes to the spec are higher-stakes than CLI changes.
+Changes to `SPEC.md` are higher-stakes than CLI changes.
 
-If you want to propose a spec change:
-- Open an issue first, don't PR directly
+- Open an issue first
 - Explain the problem it solves
 - Show how it affects existing projects
 - Breaking changes require a major version bump
@@ -82,8 +80,6 @@ If you want to propose a spec change:
 ---
 
 ## Commit Style
-
-Keep commits small and clear:
 
 ```
 feat: add status update command

@@ -2,17 +2,15 @@ import chalk from 'chalk';
 import { validateProject } from '../lib/validator.js';
 
 export async function validateCommand(): Promise<void> {
-  const rootDir = process.cwd();
-  const result = validateProject(rootDir);
+  const cwd = process.cwd();
+  const result = validateProject(cwd);
 
   console.log('');
   console.log(chalk.bold('  project-memory validate'));
   console.log('');
 
-  if (result.errors.length === 0 && result.warnings.length === 0) {
-    console.log(chalk.green('  ✔  Structure is valid. No issues found.'));
-    console.log('');
-    return;
+  if (result.errors.length === 0) {
+    console.log(chalk.green('  ✔  Base structure valid.'));
   }
 
   if (result.errors.length > 0) {
@@ -20,16 +18,24 @@ export async function validateCommand(): Promise<void> {
     for (const err of result.errors) {
       console.log(chalk.red(`     • ${err}`));
     }
-    console.log('');
   }
 
   if (result.warnings.length > 0) {
+    console.log('');
     console.log(chalk.yellow(`  ⚠  ${result.warnings.length} warning${result.warnings.length > 1 ? 's' : ''}:`));
     for (const warn of result.warnings) {
       console.log(chalk.yellow(`     • ${warn}`));
     }
-    console.log('');
   }
+
+  if (result.info.length > 0) {
+    console.log('');
+    for (const note of result.info) {
+      console.log(chalk.dim(`  ℹ  ${note}`));
+    }
+  }
+
+  console.log('');
 
   if (!result.valid) {
     process.exit(1);

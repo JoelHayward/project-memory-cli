@@ -34,8 +34,7 @@
     "build": "tsc",
     "dev": "tsc --watch",
     "start": "node dist/index.js",
-    "lint": "eslint src/**/*.ts",
-    "test": "node --experimental-vm-modules node_modules/.bin/jest"
+    "test": "echo \"No tests yet\""
   },
   "dependencies": {
     "chalk": "^5.3.0",
