@@ -1,153 +1,206 @@
 # project-memory
 
+**CLI:** `project-memory` · **npm:** https://www.npmjs.com/package/project-memory-cli
+
 > The file system is the system. Structure defines execution. Agents are interchangeable executors.
 
-**project-memory** is a file-tree standard and CLI that makes any AI coding tool more effective.
+**project-memory** is a filesystem convention plus a CLI that scaffolds a plain-markdown “project memory layer” inside your repo — so AI coding tools can read real project context instead of reconstructing it from scratch.
 
-It is not an agent framework. It defines how a project's memory, work, and intent are stored so that Claude Code, Cursor, Codex, or any future tool can enter a project cold, read the structure, understand the state, and continue work — without hand-holding.
+**Spec:** v1.0.0 — [SPEC.md](./SPEC.md)
 
-**Spec version:** v1.0.0 — see [SPEC.md](./SPEC.md)
+---
+
+## Why this exists
+
+AI tools are powerful, but they:
+
+* lose context between tasks
+* guess architecture from code
+* duplicate work or break things
+
+**project-memory solves this by making context explicit and persistent.**
+
+* **Predictable layout** — One folder (`project-memory/`), no hidden state
+* **Tool-agnostic** — Works with Cursor, Claude, Codex, or anything that reads a repo
+* **Git-native** — Everything is plain Markdown, diffable, and reviewable
+
+It is **not**:
+
+* an agent framework
+* a runtime
+* a plugin system
 
 ---
 
 ## Install
 
 ```bash
-npm install -g project-memory
+npm install -g project-memory-cli
 ```
 
-Or use without installing:
+Then run:
 
 ```bash
-npx project-memory init
+project-memory init
+```
+
+> Package name: `project-memory-cli`
+> CLI command: `project-memory`
+
+---
+
+## Quickstart
+
+```bash
+mkdir my-project
+cd my-project
+
+project-memory init
+project-memory tree
+project-memory validate
+
+project-memory new task "Build login page"
 ```
 
 ---
 
 ## Commands
 
-### `project-memory init [name]`
+### `project-memory init`
 
-Initializes a project-memory structure in the current directory.
+Detects your repo, shows a scaffold plan, then writes the structure under `project-memory/`.
 
 ```bash
-cd my-project
 project-memory init
-# or
-project-memory init my-app
-```
-
-Creates:
-```
-project/
-  overview.md
-  architecture.md
-context/
-  decisions.md
-tasks/
-  active.md
-tools/
-  global-tools.md
-data/
-  .gitkeep
-workflows/
-  .gitkeep
+project-memory init --yes
+project-memory init --new
+project-memory init --existing
 ```
 
 ---
 
-### `project-memory new task "title"`
+### `project-memory new task "<title>"`
 
-Creates a new task with auto-incremented ID. Updates `tasks/active.md`.
+Creates a new task folder and updates the active task list.
 
 ```bash
 project-memory new task "Build login page"
-project-memory new task "Add unit tests for auth module"
 ```
 
 Creates:
-```
-tasks/TASK-001/
-  instructions.md   ← define the work
-  context.md        ← background and relevant files
-  output.md         ← fill in when done
-  data/
+
+```text
+project-memory/tasks/TASK-NNN/
 ```
 
 ---
 
-### `project-memory new workflow "title"`
+### `project-memory new workflow "<title>"`
 
-Creates a new workflow with auto-incremented ID.
+Creates a workflow folder for multi-step work.
 
 ```bash
 project-memory new workflow "User onboarding"
 ```
 
-Creates:
-```
-workflows/WORKFLOW-001/
-  overview.md   ← goal, task list, completion criteria
+---
+
+### `project-memory tree`
+
+Prints a clean ASCII view of your project-memory structure.
+
+```bash
+project-memory tree
 ```
 
 ---
 
 ### `project-memory validate`
 
-Validates the project-memory structure against the spec.
+Validates the base structure against the spec.
 
 ```bash
 project-memory validate
 ```
 
-Checks for:
-- Required folders and files
-- Task folder integrity (`instructions.md`, `context.md`)
-- Workflow folder integrity
-- Non-standard naming
+---
+
+## Example structure
+
+After running `init`:
+
+```text
+project-memory/
+├── README.md
+├── project/
+│   ├── overview.md
+│   └── architecture.md
+├── context/
+│   └── decisions.md
+├── tasks/
+│   └── active.md
+├── tools/
+│   └── global-tools.md
+├── data/
+└── workflows/
+```
+
+Optional at repo root:
+
+```text
+AI.md
+```
+
+This file points AI tools to the correct entrypoints.
 
 ---
 
-## How to Use With AI Tools
+## Using with AI tools
 
-### Claude Code / Claude Cowork
-Point Claude at the project root. It will read `project/overview.md` for context, `tasks/active.md` for current state, and the relevant `TASK-NNN/` folder for the work at hand.
+The workflow is simple and consistent:
 
-### Cursor
-Open the project root. Add a note in your first message: *"Read project/overview.md and tasks/active.md before starting."*
+1. Open the repo
+2. Have the AI read the project-memory layer
+3. Execute tasks using structured context
 
-### Any other tool
-The same pattern works everywhere. The structure is the interface.
+### Recommended read order
+
+**Cold start:**
+
+* `project-memory/project/overview.md`
+* `project-memory/context/current-state.md`
+* `project-memory/tasks/active.md`
+
+**Assigned task:**
+
+* `project-memory/tasks/TASK-XXX/instructions.md`
+* `project-memory/tasks/TASK-XXX/context.md`
+* `project-memory/tasks/TASK-XXX/tools.md`
+
+Works with:
+
+* Cursor
+* Claude Code / Cowork
+* Codex
+* Any repo-aware AI
 
 ---
 
 ## Philosophy
 
-- **Visible everything** — No hidden folders. Plain files only.
-- **Human-readable first** — Every file is editable without tooling.
-- **Git-friendly** — All plaintext. Diffs cleanly.
-- **Agent-agnostic** — No Claude-specific syntax. Works with any tool.
-- **Zero-config** — The structure is the config.
-- **Minimal by default** — Only create what's needed.
-
----
-
-## What This Is Not
-
-- Not an agent framework
-- Not a runtime
-- Not a plugin system
-- Not a UI
-- Not Claude-specific
+* **The file system is the system**
+* **Structure > prompts**
+* **Context is stored, not inferred**
+* **Everything is visible and editable**
 
 ---
 
 ## Contributing
 
-See [CONTRIBUTING.md](./CONTRIBUTING.md) for guidelines.
+See [CONTRIBUTING.md](./CONTRIBUTING.md)
 
 ---
 
 ## License
 
-MIT — see [LICENSE](./LICENSE)
+MIT — see [LICENSE.md](./LICENSE.md)

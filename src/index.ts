@@ -1,5 +1,8 @@
 #!/usr/bin/env node
 
+import { readFileSync } from 'fs';
+import { dirname, join } from 'path';
+import { fileURLToPath } from 'url';
 import { Command } from 'commander';
 import chalk from 'chalk';
 import { initCommand } from './commands/init.js';
@@ -10,13 +13,18 @@ import { treeCommand } from './commands/tree.js';
 
 const program = new Command();
 
+const pkgDir = dirname(fileURLToPath(import.meta.url));
+const pkg = JSON.parse(readFileSync(join(pkgDir, '..', 'package.json'), 'utf8')) as {
+  version: string;
+};
+
 program
   .name('project-memory')
   .description(
     'A file-tree standard that makes any AI coding tool more effective.\n' +
     chalk.dim('  The file system is the system.')
   )
-  .version('0.1.0');
+  .version(pkg.version);
 
 // ── project-memory init ───────────────────────────────────────────────────────
 program
@@ -75,8 +83,9 @@ ${chalk.bold('Examples:')}
   ${chalk.dim('$')} project-memory validate
   ${chalk.dim('$')} project-memory tree
 
-${chalk.bold('Spec:')}
-  ${chalk.dim('https://github.com/JoelHayward/project-memory-cli/blob/main/SPEC.md')}
+${chalk.bold('Package & docs:')}
+  ${chalk.dim('npm: https://www.npmjs.com/package/project-memory-cli')}
+  ${chalk.dim('spec: https://github.com/JoelHayward/project-memory-cli/blob/main/SPEC.md')}
 `
 );
 

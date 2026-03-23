@@ -1,10 +1,12 @@
 {
   "name": "project-memory-cli",
   "version": "0.1.0",
-  "description": "A file-tree standard and CLI that makes any AI coding tool more effective.",
+  "description": "Plain-markdown project-memory layer for your repo. npm i -g project-memory-cli; CLI: project-memory.",
   "keywords": [
     "ai",
     "cli",
+    "project-memory",
+    "project-memory-cli",
     "project-structure",
     "agent",
     "scaffold",
@@ -15,7 +17,7 @@
     "tasks",
     "developer-tools"
   ],
-  "homepage": "https://github.com/JoelHayward/project-memory-cli",
+  "homepage": "https://www.npmjs.com/package/project-memory-cli",
   "repository": {
     "type": "git",
     "url": "https://github.com/JoelHayward/project-memory-cli.git"
@@ -34,7 +36,7 @@
     "dist",
     "SPEC.md",
     "README.md",
-    "LICENSE"
+    "LICENSE.md"
   ],
   "scripts": {
     "build": "tsc",
