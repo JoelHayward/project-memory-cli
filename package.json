@@ -10,7 +10,10 @@
     "scaffold",
     "claude",
     "cursor",
-    "codex"
+    "codex",
+    "context",
+    "tasks",
+    "developer-tools"
   ],
   "homepage": "https://github.com/JoelHayward/project-memory-cli",
   "repository": {
@@ -28,13 +31,16 @@
   },
   "main": "./dist/index.js",
   "files": [
-    "dist"
+    "dist",
+    "SPEC.md",
+    "README.md",
+    "LICENSE"
   ],
   "scripts": {
     "build": "tsc",
     "dev": "tsc --watch",
     "start": "node dist/index.js",
-    "test": "echo \"No tests yet\""
+    "prepublishOnly": "npm run build"
   },
   "dependencies": {
     "chalk": "^5.3.0",

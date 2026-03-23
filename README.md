@@ -1,78 +1,189 @@
 # project-memory
 
-> The file system is the system. Structure defines execution. Agents are interchangeable executors.
+**A file-tree standard that makes any AI coding tool more effective.**
 
-**project-memory** is a file-tree standard and CLI that makes any AI coding tool more effective.
-
-It is not an agent framework. It defines a structured information layer that lives inside a Git repo alongside the codebase. Claude Code, Cursor, Codex, or any future tool can enter the project, read the structure, understand the current state, and continue work — without hand-holding.
-
-**Spec version:** v1.0.0 — see [SPEC.md](./SPEC.md)
+Give any AI agent — Claude, Cursor, Codex, or any tool — a consistent, structured way to understand your project, track tasks, and continue work across sessions.
 
 ---
 
-## How it works
+## The problem
 
-project-memory adds one folder to your repo:
+AI coding tools are powerful, but stateless. Every session starts cold. You re-explain the project. You re-explain the task. The agent makes assumptions. Context drifts.
+
+The usual fix is to add complexity: agent frameworks, orchestration layers, tool-specific configs. These are fragile. They break when tools update. They lock you into a runtime.
+
+## A simpler fix
+
+Structure the project itself.
+
+When your project has a clear, consistent information layer — what it is, what's in progress, what each task requires — any agent can walk in cold, read the structure, and get to work. No special integration. No framework. No runtime.
+
+**The file system is the system.**
+
+---
+
+## What it is
+
+`project-memory` is a CLI that scaffolds a structured information layer inside your existing repo:
 
 ```
 your-repo/
-├── src/              ← your code (untouched)
+├── src/                    ← your code (untouched)
 ├── ...
-├── AI.md             ← optional root pointer for AI tools
-└── project-memory/   ← structured information layer
-    ├── README.md     ← entrypoint and read order
-    ├── project/      ← stable project definition
-    ├── context/      ← operational state and decisions
-    ├── tasks/        ← task tracking and execution
-    ├── workflows/    ← named task sequences
-    ├── tools/        ← environment and commands
-    └── data/         ← shared data assets
+├── AI.md                   ← one-line pointer for AI tools
+└── project-memory/
+    ├── README.md           ← read order and navigation
+    ├── project/
+    │   ├── overview.md     ← what the project is
+    │   └── architecture.md ← how it's built
+    ├── context/
+    │   ├── decisions.md    ← key decisions and rationale
+    │   └── current-state.md
+    ├── tasks/
+    │   ├── active.md       ← master task tracker
+    │   └── TASK-001/
+    │       ├── instructions.md
+    │       ├── context.md
+    │       └── output.md
+    ├── workflows/
+    ├── tools/
+    │   └── global-tools.md
+    └── data/
 ```
 
-The structure is the interface. Any agent that can read files can use it.
+Everything is plain markdown. Human-readable. Git-friendly. Works with any tool, any model, any IDE.
 
 ---
 
-## Install
+## Quickstart
 
 ```bash
 npm install -g project-memory
 ```
 
-Or use without installing:
+**Initialize in your project:**
 
 ```bash
-npx project-memory init
+cd your-project
+project-memory init
 ```
+
+The CLI detects your project type, shows you a scaffold plan, asks for confirmation, then writes the structure. Nothing is written until you confirm.
+
+**Create your first task:**
+
+```bash
+project-memory new task "Build login page"
+```
+
+**See what was created:**
+
+```bash
+project-memory tree
+```
+
+**Validate the structure:**
+
+```bash
+project-memory validate
+```
+
+---
+
+## Example: building a login feature
+
+```bash
+$ project-memory new task "Build login page"
+
+  ✔  Created TASK-001: Build login page
+
+  project-memory/tasks/TASK-001/
+  ├── instructions.md   ← define the work here
+  ├── context.md        ← add background and relevant files
+  ├── output.md         ← fill in when task is complete
+  └── data/
+
+  project-memory/tasks/active.md updated — TASK-001 added as "planned"
+```
+
+Open `tasks/TASK-001/instructions.md` and fill in what needs to be done:
+
+```markdown
+# TASK-001: Build login page
+
+## Objective
+Build a login page with email/password auth using the existing AuthService.
+
+## Steps
+1. Create src/pages/Login.tsx
+2. Wire up AuthService.login()
+3. Add form validation
+4. Redirect to /dashboard on success
+
+## Acceptance Criteria
+- [ ] Form validates email format
+- [ ] Error states handled
+- [ ] Redirects correctly on success
+```
+
+Then direct your AI agent:
+
+> *"Read project-memory/tasks/TASK-001/instructions.md and context.md, then implement the changes."*
+
+When the work is done, fill in `output.md` and mark the task `done` in `active.md`. The history lives in Git alongside the code.
+
+---
+
+## Using with AI tools
+
+No custom integrations required. The structure is the interface.
+
+### Cursor
+
+Open your repo. In your first chat message:
+
+> *"Before we start, read project-memory/README.md and project-memory/tasks/active.md."*
+
+To work on a task:
+
+> *"Read project-memory/tasks/TASK-001/instructions.md and context.md, then implement the changes."*
+
+### Claude Code
+
+Point Claude at the repo root. If `AI.md` exists:
+
+> *"Read AI.md first."*
+
+Claude reads the two-line pointer, navigates to the structure, and understands the project.
+
+### Codex / any other tool
+
+Same pattern. The files are just files. Any tool that can read a directory can use this system.
 
 ---
 
 ## Commands
 
-### `project-memory init`
+| Command | What it does |
+|---|---|
+| `project-memory init` | Detect project, show scaffold plan, confirm, write structure |
+| `project-memory init --new` | Force new project flow |
+| `project-memory init --existing` | Force existing project flow |
+| `project-memory init --yes` | Skip confirmation prompt |
+| `project-memory new task "title"` | Create a task folder, update active.md |
+| `project-memory new workflow "title"` | Create a workflow folder |
+| `project-memory validate` | Check structure against spec |
+| `project-memory tree` | Print ASCII tree of project-memory/ |
 
-Scans the current directory, produces a scaffold plan, asks for confirmation, then writes the structure.
+---
 
-```bash
-cd my-project
-project-memory init
+## How `init` works
+
+`init` is not a fixed template generator. It detects your project and applies rules.
+
 ```
+$ project-memory init
 
-**Flags:**
-- `--new` — force new project flow
-- `--existing` — force existing project flow
-- `--yes` — skip confirmation prompt (still prints plan)
-
-**What it does:**
-1. Detects signals in the current directory (`.git`, `package.json`, `src/`, etc.)
-2. Classifies as new or existing project
-3. Applies rules to generate a scaffold plan
-4. Prints the detection summary and planned files
-5. Asks for confirmation before writing anything
-6. Writes only the files that do not already exist
-
-**Example output:**
-```
   ─────────────────────────────────────────
   Detected
   ─────────────────────────────────────────
@@ -94,167 +205,45 @@ project-memory init
     AI.md (will prompt)
 
   Dynamic additions:
-    project-memory/project/brief.md        ← what and why — project brief
-    project-memory/context/constraints.md  ← technical and business constraints
-    project-memory/tasks/completed.md      ← completed tasks log
+    project-memory/project/brief.md         ← what and why
+    project-memory/context/constraints.md   ← technical constraints
+    project-memory/tasks/completed.md       ← completed tasks log
 
   Add AI.md to repo root? (recommended) [Y/n]:
   Proceed with scaffold? (y/n):
 ```
 
----
-
-### `project-memory new task "title"`
-
-Creates a new task folder with auto-incremented ID. Updates `tasks/active.md`.
-
-```bash
-project-memory new task "Build login page"
-project-memory new task "Add unit tests for auth module"
-```
-
-Creates:
-```
-project-memory/tasks/TASK-001/
-├── instructions.md   ← define the work
-├── context.md        ← background and relevant files
-├── output.md         ← fill in when done
-└── data/
-```
+Detection is shallow, rule-based, and fully explainable. Every file created has a documented reason.
 
 ---
 
-### `project-memory new workflow "title"`
+## Read order for AI agents
 
-Creates a new workflow folder with auto-incremented ID.
-
-```bash
-project-memory new workflow "User onboarding"
-```
-
-Creates:
-```
-project-memory/workflows/WORKFLOW-001/
-└── overview.md   ← goal, task list, completion criteria
-```
-
----
-
-### `project-memory validate`
-
-Validates the structure against the base layer spec.
-
-```bash
-project-memory validate
-```
-
-**Checks:**
-- `project-memory/` folder exists
-- All base layer files present
-- Task folders contain `instructions.md` and `context.md`
-- Workflow folders contain `overview.md`
-- Standard naming conventions
-
-**Output:**
-```
-  project-memory validate
-
-  ✔  Base structure valid.
-  ⚠  1 warning:
-     • TASK-003/: missing output.md (fill in when task is complete)
-  ℹ  AI.md not found at repo root — optional but recommended
-```
-
----
-
-### `project-memory tree`
-
-Prints a clean ASCII tree of the `project-memory/` directory.
-
-```bash
-project-memory tree
-```
-
-**Output:**
-```
-project-memory/
-├── README.md
-├── context/
-│   ├── constraints.md
-│   ├── current-state.md
-│   └── decisions.md
-├── data/
-├── project/
-│   ├── architecture.md
-│   ├── brief.md
-│   └── overview.md
-├── tasks/
-│   ├── TASK-001/
-│   │   ├── context.md
-│   │   ├── instructions.md
-│   │   └── output.md
-│   └── active.md
-├── tools/
-│   └── global-tools.md
-└── workflows/
-```
-
----
-
-## Using with AI tools
-
-### Directing an agent cold
-
-Point the agent at the entrypoints:
-
-> *"Read project-memory/README.md, then project-memory/project/overview.md, then project-memory/tasks/active.md before we start."*
-
-Or if `AI.md` exists at the repo root:
-
-> *"Read AI.md first."*
-
-### Assigning a specific task
-
-> *"Read project-memory/tasks/TASK-001/instructions.md and context.md, then implement the changes."*
-
-### After the agent completes work
-
-Fill in `project-memory/tasks/TASK-001/output.md` and update the status in `tasks/active.md` to `done`.
-
----
-
-## Read order
-
-### Cold start
+**Cold start** — agent enters with no context:
 1. `project-memory/project/overview.md`
-2. `project-memory/context/current-state.md` (if present)
+2. `project-memory/context/current-state.md` *(if present)*
 3. `project-memory/tasks/active.md`
 
-### Assigned task
+**Assigned task** — agent directed to specific work:
 1. `project-memory/tasks/TASK-XXX/instructions.md`
 2. `project-memory/tasks/TASK-XXX/context.md`
-3. `project-memory/tasks/TASK-XXX/tools.md` (if present)
+3. `project-memory/tasks/TASK-XXX/tools.md` *(if present)*
 
 ---
 
-## Philosophy
+## Why not an agent framework?
 
-- **Visible everything** — No hidden folders. Plain files only.
-- **Human-readable first** — Every file is editable without tooling.
-- **Git-friendly** — All plaintext. Diffs cleanly.
-- **Agent-agnostic** — No Claude-specific syntax. Works with any tool.
-- **Zero-config** — The structure is the config.
-- **Contained** — One folder. Zero interference with your codebase.
+Agent frameworks operate at the runtime layer. They depend on specific tools, specific models, specific APIs. They break when tools update.
+
+project-memory operates one layer above: the file system. It doesn't care what tool you use, what model you run, or what IDE you prefer. The structure persists. The context accumulates. The history lives in Git.
+
+When a better AI tool ships tomorrow, you point it at the same structure and keep going.
 
 ---
 
-## What this is not
+## Spec
 
-- Not an agent framework
-- Not a runtime or orchestration layer
-- Not a plugin system
-- Not a UI
-- Not Claude-specific or tool-specific
+The full file-tree standard is documented in [SPEC.md](./SPEC.md).
 
 ---
 
@@ -262,8 +251,10 @@ Fill in `project-memory/tasks/TASK-001/output.md` and update the status in `task
 
 See [CONTRIBUTING.md](./CONTRIBUTING.md).
 
+Keep changes aligned with the core principle: **the file system is the system.**
+
 ---
 
 ## License
 
-MIT — see [LICENSE](./LICENSE)
+MIT
