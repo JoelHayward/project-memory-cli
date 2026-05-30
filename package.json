@@ -1,6 +1,6 @@
 {
   "name": "project-memory-cli",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "Local-first, Git-tracked project memory for AI coding agents. npm i -g project-memory-cli; CLI: project-memory.",
   "keywords": [
     "ai",
