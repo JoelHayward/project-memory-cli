@@ -1,7 +1,7 @@
 {
   "name": "project-memory-cli",
   "version": "0.1.1",
-  "description": "Plain-markdown project-memory layer for your repo. npm i -g project-memory-cli; CLI: project-memory.",
+  "description": "Local-first, Git-tracked project memory for AI coding agents. npm i -g project-memory-cli; CLI: project-memory.",
   "keywords": [
     "ai",
     "cli",
@@ -42,6 +42,10 @@
     "build": "tsc",
     "dev": "tsc --watch",
     "start": "node dist/index.js",
+    "smoke": "node --test scripts/smoke.mjs",
+    "e2e": "node scripts/e2e-audit.mjs",
+    "test": "npm run build && npm run smoke && npm run e2e",
+    "release:check": "node scripts/release-check.mjs",
     "prepublishOnly": "npm run build"
   },
   "dependencies": {

@@ -11,68 +11,136 @@ export const gitkeep = (): string => '';
 // ── AI.md (repo root) ─────────────────────────────────────────────────────────
 
 export const aiMd = (): string =>
-`# AI Project Entry
+`# AI Agent Instructions
 
-This project uses the project-memory framework.
+This project uses **project-memory** — a local, Git-tracked memory layer for AI-assisted development.
 
-Start here:
-- project-memory/README.md
-- project-memory/project/overview.md
-- project-memory/tasks/active.md
+## Before you work
+
+1. Read \`project-memory/README.md\` (read order and update rules).
+2. Read the files it points to for this task.
+3. Do **not** rely only on code inference — use project-memory for decisions, state, and task context.
+
+## After meaningful changes
+
+Update the relevant project-memory files:
+
+- \`project-memory/context/current-state.md\` — if project state changed
+- \`project-memory/context/decisions.md\` — if a decision was made
+- \`project-memory/tasks/active.md\` — if task status changed
+- \`project-memory/tasks/TASK-NNN/output.md\` — when task work is done or partially done
+- \`project-memory/project/architecture.md\` — if architecture changed
+- \`project-memory/tools/global-tools.md\` — if commands or setup changed
+
+Keep updates **concise** and **human-readable**. Write for the next agent session.
 `;
 
 // ── project-memory/README.md ──────────────────────────────────────────────────
 
 export const frameworkReadme = (projectName: string): string =>
-`# Project Memory
+`# Project Memory — Agent Operating Guide
 
-This directory contains the structured project intelligence layer.
-It allows any AI tool to understand and continue this project.
-All context, tasks, and workflows are defined here.
+**Project:** ${projectName} · **Framework:** project-memory v1.0.0
 
-**Project:** ${projectName}
-**Framework:** project-memory v1.0.0
+This folder is the **operating guide** for AI agents and humans. Markdown here is the source of truth. Read before code changes. Update after meaningful work.
 
 ---
 
-## Recommended Read Order
+## Read order
 
-### Cold Start
-*Agent enters project with no prior context.*
+### Cold start (no task assigned)
 
-1. \`project/overview.md\` — what this project is and its primary goal
-2. \`context/current-state.md\` — where things stand right now (if present)
-3. \`tasks/active.md\` — what is being worked on
+1. \`project/overview.md\` — what this project is
+2. \`context/current-state.md\` — where things stand (if present)
+3. \`tasks/active.md\` — current work
+4. \`context/handoff.md\` — last session handoff (if present)
 
-### Assigned Task
-*Agent has been directed to a specific task.*
+### Assigned task (TASK-XXX)
 
-1. \`tasks/TASK-XXX/instructions.md\` — what to do
-2. \`tasks/TASK-XXX/context.md\` — background and relevant files
-3. \`tasks/TASK-XXX/tools.md\` — tooling notes (if present)
+1. \`tasks/TASK-XXX/instructions.md\`
+2. \`tasks/TASK-XXX/context.md\`
+3. \`tasks/TASK-XXX/tools.md\` (if present)
+4. Relevant source files listed in the task context
 
----
-
-## Structure
-
-| Folder       | Purpose                                                  |
-|--------------|----------------------------------------------------------|
-| \`project/\`   | Stable project definition: overview, architecture        |
-| \`context/\`   | Dynamic operational state: decisions, current state      |
-| \`tasks/\`     | Active work, task folders, completed log                 |
-| \`workflows/\` | Named sequences of tasks                                 |
-| \`tools/\`     | Environment setup and global commands                    |
-| \`data/\`      | Shared data assets                                       |
+Do **not** rely only on code search. Use project-memory for state, decisions, and handoff.
 
 ---
 
-## Global Context Files
+## Update rules (after meaningful work)
 
-- \`project/overview.md\` — project identity and goal
-- \`project/architecture.md\` — system design and tech stack
-- \`context/decisions.md\` — key decisions and rationale
-- \`context/current-state.md\` — current operational state
-- \`tools/global-tools.md\` — environment and commands
+Update **only** files affected by your changes:
+
+| File | When |
+|------|------|
+| \`context/current-state.md\` | State, blockers, or priorities changed |
+| \`context/decisions.md\` | A design or product decision was made |
+| \`tasks/active.md\` | Task status changed |
+| \`tasks/TASK-XXX/output.md\` | Task work done or partially done |
+| \`project/architecture.md\` | System design changed |
+| \`tools/global-tools.md\` | Commands or setup changed |
+
+Also run \`project-memory handoff\` before ending a session when state shifted.
+
+---
+
+## Avoid noisy documentation churn
+
+- Update facts, not essays. Prefer short bullets over long prose.
+- Do not duplicate code in markdown — point to paths and summarize.
+- Do not edit files you did not need for this task.
+- One decision = one ADR entry in \`context/decisions.md\`.
+- If nothing material changed, do not touch project-memory.
+
+---
+
+## Record decisions (ADR-style)
+
+Add a new entry at the **top** of \`context/decisions.md\`:
+
+- **Date**
+- **Decision** — what was chosen
+- **Rationale** — why
+- **Alternatives** — what was rejected
+- **Status** — \`active\`, \`superseded\`, or \`deprecated\`
+
+Keep each entry to one screenful.
+
+---
+
+## Complete task output
+
+When a task is done or you are handing off partial work:
+
+1. Fill \`tasks/TASK-XXX/output.md\` (summary, files changed, tests run, results, follow-ups).
+2. Update \`tasks/active.md\` status (\`planned\` → \`in-progress\` → \`done\` or \`blocked\`).
+3. Refresh \`context/current-state.md\` if project state changed.
+4. Add a decision entry if you made one.
+
+---
+
+## Leave handoff notes
+
+Before ending a session:
+
+\`\`\`bash
+project-memory handoff
+\`\`\`
+
+This writes \`context/handoff.md\` (or use \`--stdout\` to paste into a new chat). Ensure \`current-state.md\` matches reality.
+
+---
+
+## Folder map
+
+| Folder | Purpose |
+|--------|---------|
+| \`project/\` | Stable definition: overview, architecture |
+| \`context/\` | Operational state, decisions, handoff |
+| \`tasks/\` | Active work and task folders |
+| \`workflows/\` | Multi-step sequences |
+| \`tools/\` | Commands and environment setup |
+| \`data/\` | Shared assets and generated indexes |
+| \`snapshots/\` | Optional assembled context snapshots |
 `;
 
 // ── project/overview.md ───────────────────────────────────────────────────────
@@ -182,18 +250,17 @@ export const projectPlan = (): string =>
 export const contextDecisions = (): string =>
 `# Decisions
 
-A running log of key architectural and product decisions.
-New entries go at the top.
+Concise ADR-style log. **New entries go at the top.** One decision per entry.
 
 ---
 
-## [Date] — [Decision Title]
+## [YYYY-MM-DD] — [Decision title]
 
-**Decision:** [What was decided]
+**Decision:** [What was decided — one or two sentences]
 
 **Rationale:** [Why this choice was made]
 
-**Alternatives rejected:** [What else was considered and why it was not chosen]
+**Alternatives:** [What else was considered and why rejected]
 
 **Status:** active
 
@@ -205,22 +272,25 @@ New entries go at the top.
 export const contextCurrentState = (): string =>
 `# Current State
 
-*Last updated: [date]*
+*Last updated: [YYYY-MM-DD]*
 
 ## What is working
-[What is stable and functional right now]
+[Stable, verified functionality — bullet list]
 
 ## What is in progress
-[What is actively being worked on — link to active tasks]
+[Active work — link to TASK-NNN folders or brief note]
 
 ## What is blocked
-[What cannot proceed and why]
+[Blockers and why — or "None"]
 
 ## Immediate next priority
-[The single most important thing to do next]
+[The single most important next step]
+
+## Notes for next AI agent
+[Short handoff: context the next session needs that is not obvious from code]
 
 ---
-*Keep this file to one page. Update it whenever the project state changes significantly.*
+*Keep to one page. Update whenever project state changes. Set Last updated to today's date.*
 `;
 
 // ── context/constraints.md ───────────────────────────────────────────────────
@@ -302,35 +372,38 @@ Rows are moved here from \`active.md\` on completion.
 export const globalTools = (projectName: string): string =>
 `# Global Tools — ${projectName}
 
-## Environment Setup
-\`\`\`bash
-# Install dependencies
-# [command]
+Commands agents should use to install, verify, and run this project. Replace placeholders with real commands.
 
-# Copy environment config
-# cp .env.example .env
+## Install
+\`\`\`bash
+[install command]
 \`\`\`
 
-## Common Commands
+## Build
 \`\`\`bash
-# Development
-# [dev command]
-
-# Tests
-# [test command]
-
-# Build
-# [build command]
+[build command]
 \`\`\`
 
-## Database
+## Test
 \`\`\`bash
-# [Migration command]
-# [Seed command]
+[test command]
 \`\`\`
 
-## Notes
-[Anything an agent needs to know to operate this project at the system level]
+## Lint
+\`\`\`bash
+[lint command]
+\`\`\`
+
+## Dev server
+\`\`\`bash
+[dev server command]
+\`\`\`
+
+## Environment notes
+[Node/Python version, env files, ports, known setup issues — or "None documented yet"]
+
+---
+*Update when commands or setup change. Agents: verify commands still work before documenting.*
 `;
 
 // ── tasks/TASK-NNN/instructions.md ───────────────────────────────────────────
@@ -339,19 +412,27 @@ export const taskInstructions = (id: string, title: string): string =>
 `# ${id}: ${title}
 
 ## Objective
-[One sentence: what must be done]
+[One sentence: what must be done and why]
 
-## Steps
-1. [Step one]
-2. [Step two]
-3. [Step three]
-
-## Acceptance Criteria
+## Acceptance criteria
 - [ ] [Criterion one]
 - [ ] [Criterion two]
 
-## Notes
-[Anything important that does not fit above]
+## Constraints
+[Technical, time, or scope limits — or "None beyond project defaults"]
+
+## Relevant files
+- \`path/to/file\` — [role in this task]
+
+## Required verification
+[Tests, manual checks, or commands that must pass — e.g. \`npm test\`]
+
+## Agent update instructions
+When done or handing off:
+1. Fill \`tasks/${id}/output.md\`
+2. Update \`tasks/active.md\` status for ${id}
+3. Update \`context/current-state.md\` if state changed
+4. Add \`context/decisions.md\` entry if a decision was made
 `;
 
 // ── tasks/TASK-NNN/context.md ─────────────────────────────────────────────────
@@ -360,16 +441,19 @@ export const taskContext = (id: string): string =>
 `# Context: ${id}
 
 ## Background
-[Why this task exists and what problem it solves]
+[Why this task exists — 1–2 sentences]
 
-## Relevant Files
-- \`path/to/file.ts\` — [what it does]
+## Relevant files
+- \`path/to/file\` — [what it does / why it matters]
 
-## Dependencies
-[Tasks, services, or systems this task depends on]
+## Prior decisions
+[Link or quote from \`context/decisions.md\` that applies — or "None"]
 
-## Constraints
-[Technical or business constraints to be aware of]
+## Assumptions
+[What you are assuming to be true for this task]
+
+## Risks / open questions
+[Unknowns, edge cases, or questions to resolve — or "None"]
 `;
 
 // ── tasks/TASK-NNN/output.md ──────────────────────────────────────────────────
@@ -377,19 +461,27 @@ export const taskContext = (id: string): string =>
 export const taskOutput = (id: string): string =>
 `# Output: ${id}
 
-*Fill this in when the task is complete.*
+*Fill in when the task is complete or when handing off partial work.*
 
-## Summary
-[What was done in 2–3 sentences]
+## Summary of work completed
+[2–3 sentences: what was done and outcome]
 
-## Changes Made
-- \`path/to/file.ts\` — [what changed and why]
+## Files changed
+- \`path/to/file\` — [brief change description]
 
-## Outcomes
-[Did it meet the acceptance criteria? Any issues encountered?]
+## Commands / tests run
+\`\`\`bash
+[commands you ran, or "None"]
+\`\`\`
 
-## Follow-up
-[New tasks created or recommended as a result of this work]
+## Results
+[Pass/fail/partial — did acceptance criteria met? Any issues?]
+
+## Follow-up tasks
+[New TASK-NNN to create, or "None"]
+
+## Handoff notes
+[What the next agent needs to know to continue — or "Task complete, no handoff needed"]
 `;
 
 // ── tasks/TASK-NNN/tools.md ───────────────────────────────────────────────────

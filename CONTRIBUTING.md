@@ -44,6 +44,12 @@ cd project-memory-cli
 
 npm install
 npm run build
+npm test          # build + smoke + e2e audit
+npm run release:check   # full pre-publish verification (see RELEASE.md)
+
+# Or run individually:
+npm run smoke     # unit-style CLI tests
+npm run e2e       # full flow audit in temp dirs
 
 # Link locally so you can test the CLI from any folder
 npm link
